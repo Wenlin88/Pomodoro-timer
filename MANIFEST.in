@@ -1,0 +1,4 @@
+include icons/*.png
+include sounds/*.mp3
+include LICENSE
+include README.md

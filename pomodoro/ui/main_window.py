@@ -65,10 +65,10 @@ class PomodoroTimer(QWidget):
         if ui_settings.get("always_on_top", True):
             window_flags |= Qt.WindowType.WindowStaysOnTopHint
         
-        self.setWindowFlags(window_flags)
-
-        # Set a custom icon as the application icon
-        self.setWindowIcon(QIcon("icons/pomodoro.png"))
+        self.setWindowFlags(window_flags)        # Set a custom icon as the application icon
+        from ..utils import get_resource_path
+        icon_path = get_resource_path("icons/pomodoro.png")
+        self.setWindowIcon(QIcon(icon_path))
 
         # Create the layouts and widgets
         self._create_layout()
