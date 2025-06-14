@@ -4,7 +4,12 @@ Handles loading and playing sound files with volume control.
 """
 import os
 import logging
+
+# Suppress the default pygame support message
+os.environ.setdefault("PYGAME_HIDE_SUPPORT_PROMPT", "1")
+
 import pygame
+from .utils import get_resource_path
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +40,7 @@ class SoundManager:
         sound_file = self.config.get_rest_sound()
         volume = self.config.get_rest_volume()
         self._play_sound(sound_file, volume)
-
+        
     def _play_sound(self, sound_file, volume):
         """
         Play a sound file with the specified volume.
@@ -45,13 +50,16 @@ class SoundManager:
             volume: Volume level (0.0 to 1.0)
         """
         try:
-            if not os.path.exists(sound_file):
-                logger.warning(f"Sound file not found: {sound_file}")
+            # Try to get a valid resource path for the sound file
+            actual_sound_file = get_resource_path(sound_file)
+            
+            if not os.path.exists(actual_sound_file):
+                logger.warning(f"Sound file not found: {sound_file} (tried: {actual_sound_file})")
                 return
                 
-            pygame.mixer.music.load(sound_file)
+            pygame.mixer.music.load(actual_sound_file)
             pygame.mixer.music.set_volume(volume)
             pygame.mixer.music.play()
-            logger.debug(f"Playing sound: {sound_file} at volume: {volume}")
+            logger.debug(f"Playing sound: {actual_sound_file} at volume: {volume}")
         except Exception as e:
             logger.error(f"Error playing sound {sound_file}: {e}")
