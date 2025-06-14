@@ -3,8 +3,19 @@ name = "pomodoro-timer"
 version = "0.2.0"
 description = "A modern, customizable Pomodoro timer application built with Python and PyQt6"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = [
     "PyQt6>=6.5.0",
     "pygame>=2.5.0",
+    "appdirs>=1.4.4",
 ]
+
+[project.scripts]
+pomodoro = "pomodoro.cli:main"
+
+[tool.setuptools]
+packages = ["pomodoro", "pomodoro.ui"]
+include-package-data = true
+
+[tool.setuptools.package-data]
+pomodoro = ["../icons/*.png", "../sounds/*.mp3"]

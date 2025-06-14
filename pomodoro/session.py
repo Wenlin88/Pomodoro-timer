@@ -10,15 +10,21 @@ logger = logging.getLogger(__name__)
 
 class SessionManager:
     """Manager for tracking and logging pomodoro sessions."""
-
-    def __init__(self, log_file="pomodoro_sessions.log"):
+    
+    def __init__(self, log_file=None):
         """
         Initialize the session manager.
         
         Args:
-            log_file: Path to the session log file
+            log_file: Path to the session log file (defaults to pomodoro_sessions.log in current directory)
         """
-        self.log_file = log_file
+        self.log_file = log_file or "pomodoro_sessions.log"
+        
+        # Create directory for log file if it doesn't exist
+        log_dir = os.path.dirname(self.log_file)
+        if log_dir and not os.path.exists(log_dir):
+            os.makedirs(log_dir, exist_ok=True)
+            
         self.session_count = self._get_session_count()
 
     def _get_session_count(self):
