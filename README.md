@@ -31,17 +31,51 @@ This Pomodoro Timer helps you boost productivity using the Pomodoro Technique â€
 
 ## Installation
 
-1. Clone this repository
-2. Install the required dependencies:
+### Option 1: Install from PyPI (Recommended)
+
+Install the package directly using pip:
 
 ```bash
-pip install PyQt6 pygame
+pip install pomodoro-timer
+```
+
+Run the application:
+
+```bash
+pomodoro
+```
+
+### Option 2: Install from Source
+
+1. Clone this repository
+2. Install the package in development mode:
+
+```bash
+pip install -e .
 ```
 
 3. Run the application:
 
 ```bash
+pomodoro
+```
+
+Or run directly:
+
+```bash
 python main.py
+```
+
+### Command Line Options
+
+The application supports several command line options:
+
+```bash
+pomodoro --help                # Show help message
+pomodoro --version             # Show version
+pomodoro --focus 30            # 30 minute focus periods 
+pomodoro --rest 10             # 10 minute rest periods
+pomodoro --focus 45 --rest 15  # 45 minute focus, 15 minute rest
 ```
 
 ## Configuration
