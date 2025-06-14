@@ -38,13 +38,14 @@ class SessionManager:
             logger.error(f"Error reading session count: {e}")
             return 0
     
-    def log_session(self, focus_text=""):
+    def log_session(self, focus_text="", success=True):
         """
         Log a completed pomodoro session.
-        
+
         Args:
             focus_text: Text describing what was focused on during the session
-        
+            success: Whether the session was completed successfully
+
         Returns:
             int: Updated session count
         """
@@ -56,6 +57,7 @@ class SessionManager:
                 log_entry = f"Session {self.session_count} completed at {timestamp}"
                 if focus_text:
                     log_entry += f" - {focus_text}"
+                log_entry += " - success" if success else " - failed"
                 file.write(log_entry + "\n")
                 
             logger.info(f"Logged session {self.session_count}")

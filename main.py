@@ -28,9 +28,9 @@ def main():
         from pomodoro.session import SessionManager
         from pomodoro.ui import PomodoroTimer
         
-        # Create configuration
-        config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json")
-        config = Config(config_path)
+        # Create configuration.  The Config class will place the file in
+        # ``~/.pomodoro`` by default if no path is provided.
+        config = Config()
         
         # Create managers
         sound_manager = SoundManager(config)

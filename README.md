@@ -44,7 +44,9 @@ python main_new.py
 
 ## Configuration
 
-The application uses a `config.json` file to store user preferences:
+The application uses a `config.json` file to store user preferences. By
+default the file is created in `~/.pomodoro/config.json` when the program is
+first run:
 
 - **Timer**: Configure focus and rest period durations
 - **Sounds**: Set different sound files and volume levels for focus and rest periods
