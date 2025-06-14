@@ -47,9 +47,21 @@ DEFAULT_CONFIG = {
 class Config:
     """Configuration manager for the Pomodoro Timer application."""
 
-    def __init__(self, config_path="config.json"):
-        """Initialize the configuration manager."""
-        self.config_path = config_path
+    def __init__(self, config_path=None):
+        """Initialize the configuration manager.
+
+        If ``config_path`` is not provided a directory ``~/.pomodoro`` is
+        created and the configuration is stored there.  This avoids issues when
+        the application is installed system wide and the package directory is
+        read only.
+        """
+        if config_path is None:
+            config_dir = Path.home() / ".pomodoro"
+            config_dir.mkdir(parents=True, exist_ok=True)
+            self.config_path = str(config_dir / "config.json")
+        else:
+            self.config_path = config_path
+            Path(os.path.dirname(self.config_path)).mkdir(parents=True, exist_ok=True)
         self.config = self._load_config()
         self._batch_mode = False
 
