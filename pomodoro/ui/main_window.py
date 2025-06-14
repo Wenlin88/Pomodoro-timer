@@ -3,13 +3,18 @@ Main window component for the Pomodoro Timer application.
 """
 import logging
 from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QGridLayout,
-    QInputDialog, QApplication
+    QWidget,
+    QVBoxLayout,
+    QGridLayout,
+    QInputDialog,
+    QApplication,
+    QMessageBox,
 )
 from PyQt6.QtCore import QTimer, Qt, QPoint, QRect
 from PyQt6.QtGui import QIcon, QMouseEvent
 
 from .config_dialog import PomodoroConfigDialog
+from .focus_dialog import FocusSessionDialog
 from .components import TimerLabel, FocusLabel, PomodoroButton
 
 logger = logging.getLogger(__name__)
@@ -186,10 +191,17 @@ class PomodoroTimer(QWidget):
         )
 
     def start_focus(self):
-        """Start a focus session."""
-        text, ok = QInputDialog.getText(self, 'Focus Session', 'What are you focusing on?')
-        if ok:
+        """Start a focus session allowing duration adjustments."""
+        dialog = FocusSessionDialog(self.config, self)
+        if dialog.exec():
+            text, focus_len, rest_len = dialog.get_values()
             self.focus_text = text
+            # Update config and internal timers
+            self.config.set_focus_period(focus_len)
+            self.config.set_rest_period(rest_len)
+            self.pomodoro_time = focus_len * 60
+            self.rest_time = rest_len * 60
+
             self.update_focus_label()
             self.time_left = self.pomodoro_time
             self.is_rest_period = False
@@ -236,7 +248,8 @@ class PomodoroTimer(QWidget):
                 if not self.is_rest_period:
                     # Focus period ended
                     self.sound_manager.play_focus_end()
-                    self.session_manager.log_session(self.focus_text)
+                    success = self.ask_session_success()
+                    self.session_manager.log_session(self.focus_text, success)
                     self.start_rest_period()
                 else:
                     # Rest period ended
@@ -267,6 +280,17 @@ class PomodoroTimer(QWidget):
             self.focus_label.setText(f"Focus: {self.focus_text}")
         else:
             self.focus_label.setText("")
+
+    def ask_session_success(self):
+        """Query the user whether the session was successful."""
+        box = QMessageBox(self)
+        box.setWindowTitle("Session Complete")
+        box.setText("Was the focus session successful?")
+        box.setStandardButtons(
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+        )
+        result = box.exec()
+        return result == QMessageBox.StandardButton.Yes
 
     def open_settings(self):
         """Open the settings dialog."""

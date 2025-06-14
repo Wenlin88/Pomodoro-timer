@@ -11,6 +11,8 @@ This Pomodoro Timer helps you boost productivity using the Pomodoro Technique â€
 - **Pomodoro Sessions**: Configurable focus and rest periods (default 25/5 minutes)
 - **Focus Tracking**: Enter what you're focusing on for each session
 - **Session Logging**: Automatically logs completed sessions with timestamps
+- **Per-session Customization**: Adjust focus and rest durations before each session
+- **Session Outcome Tracking**: Record success or failure of focus sessions
 - **Audio Alerts**: Different sounds and volume levels for focus and rest periods
 - **Obsidian Integration**: Optional quick access to Daily and Weekly notes in Obsidian
 - **Window Management**:
@@ -78,7 +80,9 @@ pomodoro --focus 45 --rest 15  # 45 minute focus, 15 minute rest
 
 ## Configuration
 
-The application uses a `config.json` file to store user preferences:
+The application uses a `config.json` file to store user preferences. By
+default the file is created in `~/.pomodoro/config.json` when the program is
+first run:
 
 - **Timer**: Configure focus and rest period durations
 - **Sounds**: Set different sound files and volume levels for focus and rest periods
@@ -108,7 +112,7 @@ The application is organized into modular components:
 - `pomodoro/sound.py`: Sound playback with volume control
 - `pomodoro/notes.py`: Obsidian integration
 - `pomodoro/session.py`: Session tracking and logging
-- `pomodoro/ui_fixed.py`: User interface components
+- `pomodoro/ui`: User interface components
 
 ## Sound Files
 
@@ -123,7 +127,7 @@ The application has gone through multiple versions:
 
 - `main_v1.py`: Initial implementation with basic Pomodoro functionality
 - `main_v2.py`: Enhanced UI and Obsidian integration
-- `main_new.py`: Current modular version with configuration support
+- `main.py`: Current modular version with configuration support
 
 ## License
 
