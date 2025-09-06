@@ -9,10 +9,10 @@
 - `config.json`: Example defaults; user config is written to `~/.pomodoro/config.json` at first run.
 
 ## Build, Test, and Development Commands
-- Setup (editable): `python -m pip install -e .` (Python 3.12+)
-- Run app (installed): `pomodoro`
-- Run app (source): `python main.py`
-- CLI example: `pomodoro --focus 45 --rest 15`
+- Quick run (no clone): `uvx pomodoro`
+- Setup (editable): `uv pip install -e .` (Python 3.12+)
+- Run app (installed/source): `uv run pomodoro` or `uv run python main.py`
+- CLI example: `uvx pomodoro --focus 45 --rest 15`
 - Package (optional): `python -m build` (requires `pip install build`)
 
 ## Coding Style & Naming Conventions
@@ -23,8 +23,8 @@
 
 ## Testing Guidelines
 - Test suite: `pytest` with tests in `tests/` (`test_*.py`).
-- Run all tests: `pytest`
-- Focused runs: `pytest -q -k config` or `-k session`
+- Run all tests: `uv run pytest`
+- Focused runs: `uv run pytest -q -k config` or `-k session`
 - Add small, isolated tests (e.g., `session` logging, `config` load/save). Use `tmp_path` to avoid writing to user files.
 - Manual checks: launch app, run a full focus/rest cycle, verify sounds, config persistence, and Obsidian links if enabled.
 

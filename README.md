@@ -31,6 +31,23 @@ This Pomodoro Timer helps you boost productivity using the Pomodoro Technique â€
 
 ## Installation
 
+### Quick Start with uv (Recommended)
+
+Use the uv Python package manager for fast, isolated runs:
+
+- Run without cloning (ephemeral tool run):
+
+```bash
+uvx pomodoro
+```
+
+- Develop locally from source:
+
+```bash
+uv pip install -e .
+uv run pomodoro
+```
+
 ### Option 1: Install from PyPI (Recommended)
 
 Install the package directly using pip:
@@ -134,6 +151,6 @@ Contributions, suggestions, and feedback are welcome! Feel free to submit a pull
 Install dev deps and run tests:
 
 ```bash
-pip install -e .
-pytest
+uv pip install -e . pytest
+uv run pytest
 ```
