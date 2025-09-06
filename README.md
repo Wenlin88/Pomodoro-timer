@@ -48,21 +48,8 @@ uv pip install -e .
 uv run pomodoro
 ```
 
-### Option 1: Install from PyPI (Recommended)
 
-Install the package directly using pip:
-
-```bash
-pip install pomodoro-timer
-```
-
-Run the application:
-
-```bash
-pomodoro
-```
-
-### Option 2: Install from Source
+### Install from Source
 
 1. Clone this repository
 2. Install the package in development mode:

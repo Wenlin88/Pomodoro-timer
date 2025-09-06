@@ -37,3 +37,28 @@
 - Do not commit personal `~/.pomodoro/config.json` or OS-specific paths.
 - When adding assets to `icons/` or `sounds/`, keep filenames descriptive (e.g., `focus_end.mp3`) and load via existing utilities.
 - Avoid blocking the UI thread; use timers/slots appropriately in PyQt6.
+
+## Windows/Pwsh Run Notes (Agents)
+- Prefer `apply_patch` for edits; avoid ad‑hoc mass text ops.
+- Use PowerShell-native tools (no Bash heredocs `<<`, `nl`, `sed`). For text: `Get-Content -Raw`/`Set-Content` and `Select-String`/`-replace`.
+- For quick Python, use `python -c "..."`; do not rely on shell heredocs.
+- Quote/escape carefully: backtick is pwsh escape. Use single quotes or here-strings `@'...'@` for regex/Markdown.
+- Handle CRLF vs LF differences; make small, contextual changes instead of brittle multi-line regex.
+- Check tool availability (e.g., `rg`) before use; otherwise fall back to `Select-String`.
+- Avoid non-existent cmdlets (e.g., `Apply-ContentPatch`); only the `apply_patch` tool patches files.
+- Group necessary commands and avoid no-op runs to reduce wasted executions (and cost). Limit networked commands to essentials.
+
+Common gotchas and safe patterns
+- Do not use Bash heredocs: `python - << 'PY'` fails in pwsh. Use `python -c "..."`.
+- Avoid GNU tools not on Windows: `nl`, `sed`, etc. Use `Get-Content`, `Set-Content`, `Select-String`.
+- Escape metacharacters in args: wrap regex with single quotes; avoid unescaped `|`, `(`, `)`, `*` in pwsh strings.
+- Commit messages with parentheses/pipes: pass as separate `-m` args and avoid characters that pwsh parses; or use `git commit -F` with a temp file.
+- Editing Markdown fences with regex is brittle. Prefer `apply_patch` to modify specific hunks.
+- CRLF/LF: avoid regex relying on newlines; operate on logical sections or exact anchors.
+
+### uv on Windows
+- Install uv: `pip install uv` or use the official installer from Astral.
+- Ensure `uv.exe` is on PATH (close/reopen terminal if needed).
+- Quick run without cloning: `uvx pomodoro`
+- Local dev: `uv pip install -e .` then `uv run pomodoro`
+- Tests: `uv pip install -e . pytest` then `uv run pytest`
