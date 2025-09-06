@@ -1,6 +1,6 @@
 [project]
 name = "pomodoro-timer"
-version = "0.2.0"
+version = "0.2.1"
 description = "A modern, customizable Pomodoro timer application built with Python and PyQt6"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -19,3 +19,8 @@ include-package-data = true
 
 [tool.setuptools.package-data]
 pomodoro = ["../icons/*.png", "../sounds/*.mp3"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]
+pythonpath = ["."]

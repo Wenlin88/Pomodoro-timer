@@ -76,6 +76,7 @@ class Config:
                     return config
             else:
                 # Create default configuration file if not exists
+                os.makedirs(os.path.dirname(self.config_path), exist_ok=True)
                 with open(self.config_path, 'w') as file:
                     json.dump(DEFAULT_CONFIG, file, indent=2)
                 logger.info(f"Created default configuration file: {self.config_path}")

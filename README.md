@@ -25,7 +25,7 @@ This Pomodoro Timer helps you boost productivity using the Pomodoro Technique â€
 
 ## Requirements
 
-- Python 3.13+
+- Python 3.12+
 - PyQt6
 - pygame
 
@@ -121,14 +121,6 @@ Place your custom sound files in the `sounds/` directory:
 - `focus_end.mp3`: Plays when a focus period ends (gentle sound recommended)
 - `rest_end.mp3`: Plays when a rest period ends (louder sound recommended)
 
-## Development History
-
-The application has gone through multiple versions:
-
-- `main_v1.py`: Initial implementation with basic Pomodoro functionality
-- `main_v2.py`: Enhanced UI and Obsidian integration
-- `main.py`: Current modular version with configuration support
-
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
@@ -136,3 +128,12 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Contributing
 
 Contributions, suggestions, and feedback are welcome! Feel free to submit a pull request or open an issue.
+
+## Testing
+
+Install dev deps and run tests:
+
+```bash
+pip install -e .
+pytest
+```
