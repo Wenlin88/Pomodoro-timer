@@ -182,7 +182,6 @@ class Config:
     def update_obsidian_settings(
         self,
         vault_name=None,
-        vault_path=None,
         daily_path=None,
         weekly_path=None,
         sessions_path=None,
@@ -190,8 +189,6 @@ class Config:
         """Update Obsidian settings."""
         if vault_name is not None:
             self.config["obsidian"]["vault_name"] = vault_name
-        if vault_path is not None:
-            self.config["obsidian"]["vault_path"] = vault_path
         if daily_path is not None:
             self.config["obsidian"]["daily_notes_path"] = daily_path
         if weekly_path is not None:

@@ -7,7 +7,6 @@ import logging
 import os
 import sys
 import subprocess
-from pathlib import Path
 import urllib.parse
 import webbrowser
 
@@ -70,47 +69,48 @@ class NotesManager:
         planned_minutes: int | None = None,
         actual_minutes: int | None = None,
     ) -> bool:
-        """Append a session entry to a dated Markdown file in the Obsidian vault.
+        """Append a session entry to a dated Markdown file using Obsidian Advanced URI.
 
-        Creates a file named "YYYY-MM-DD - Pomodoro Sessions.md" in
-        obsidian.sessions_notes_path inside the configured vault the first time
-        it's used each day.
+        Uses obsidian://adv-uri with mode=append to write into a file
+        "YYYY-MM-DD - Pomodoro Sessions.md" under the configured
+        `sessions_notes_path` in the given `vault_name`.
         """
         if not self.enabled:
             return False
-
-        vault_path = (self.obsidian_settings or {}).get("vault_path") or ""
-        sessions_subpath = (self.obsidian_settings or {}).get("sessions_notes_path") or ""
-        if not vault_path:
-            logger.warning("Obsidian vault_path not set; cannot record session to vault")
-            return False
-
         try:
             date_str = datetime.datetime.now().strftime("%Y-%m-%d")
-            dir_path = Path(vault_path) / sessions_subpath
-            dir_path.mkdir(parents=True, exist_ok=True)
-
-            file_path = dir_path / f"{date_str} - Pomodoro Sessions.md"
-            if not file_path.exists():
-                header = f"# Pomodoro Sessions – {date_str}\n\n"
-                file_path.write_text(header, encoding="utf-8")
-
             time_str = datetime.datetime.now().strftime("%H:%M")
             status = "success" if success else ("early stop" if early else "failed")
-            details = []
+            details: list[str] = []
             if planned_minutes is not None:
                 details.append(f"planned {planned_minutes}m")
             if actual_minutes is not None:
                 details.append(f"actual {actual_minutes}m")
             detail_str = f" ({', '.join(details)})" if details else ""
             focus_desc = focus_text or "(no description)"
-            line = f"- {time_str} – {focus_desc} — {status}{detail_str}\n"
-            with file_path.open("a", encoding="utf-8") as f:
-                f.write(line)
-            logger.info(f"Recorded session to Obsidian: {file_path}")
+            line = f"- {time_str} – {focus_desc} — {status}{detail_str}\\n"
+
+            sessions_subpath = (self.obsidian_settings or {}).get("sessions_notes_path") or ""
+            filepath = f"{sessions_subpath}/{date_str} - Pomodoro Sessions.md" if sessions_subpath else f"{date_str} - Pomodoro Sessions.md"
+            vault = (self.obsidian_settings or {}).get("vault_name") or ""
+            if not vault:
+                logger.warning("Obsidian vault_name not set; cannot record session via Advanced URI")
+                return False
+
+            url = (
+                "obsidian://adv-uri?vault="
+                + urllib.parse.quote(vault)
+                + "&filepath="
+                + urllib.parse.quote(filepath)
+                + "&data="
+                + urllib.parse.quote(line)
+                + "&mode=append"
+            )
+            self._open_obsidian_url(url)
+            logger.info("Recorded session to Obsidian via Advanced URI")
             return True
         except Exception as e:
-            logger.error(f"Error recording session to Obsidian: {e}")
+            logger.error(f"Error recording session to Obsidian via Advanced URI: {e}")
             return False
 
     def is_enabled(self):

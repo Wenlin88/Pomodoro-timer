@@ -106,9 +106,6 @@ class PomodoroConfigDialog(QDialog):
         # Vault name
         self.vault_name_edit = QLineEdit(obsidian_settings.get("vault_name", ""))
         notes_layout.addRow("Vault name:", self.vault_name_edit)
-        # Vault path
-        self.vault_path_edit = QLineEdit(obsidian_settings.get("vault_path", ""))
-        notes_layout.addRow("Vault path:", self.vault_path_edit)
         # Daily notes path
         self.daily_path_edit = QLineEdit(obsidian_settings.get("daily_notes_path", ""))
         notes_layout.addRow("Daily notes path:", self.daily_path_edit)
@@ -137,7 +134,6 @@ class PomodoroConfigDialog(QDialog):
         self.config.set_obsidian_enabled(self.obsidian_enabled.isChecked())
         self.config.update_obsidian_settings(
             vault_name=self.vault_name_edit.text(),
-            vault_path=self.vault_path_edit.text(),
             daily_path=self.daily_path_edit.text(),
             weekly_path=self.weekly_path_edit.text(),
             sessions_path=self.sessions_path_edit.text(),
