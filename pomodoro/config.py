@@ -27,8 +27,10 @@ DEFAULT_CONFIG = {
     "obsidian": {
         "enabled": True,
         "vault_name": "memory",
+        "vault_path": "",
         "daily_notes_path": "Personal/Notes/Daily Notes",
-        "weekly_notes_path": "Personal/Notes/Weekly Notes"
+        "weekly_notes_path": "Personal/Notes/Weekly Notes",
+        "sessions_notes_path": "Personal/Notes/Daily Notes"
     },
     "ui": {
         "show_focus_text": True,
@@ -178,12 +180,23 @@ class Config:
         self.config["obsidian"]["enabled"] = enabled
         self.save()
 
-    def update_obsidian_settings(self, vault_name=None, daily_path=None, weekly_path=None):
+    def update_obsidian_settings(
+        self,
+        vault_name=None,
+        vault_path=None,
+        daily_path=None,
+        weekly_path=None,
+        sessions_path=None,
+    ):
         """Update Obsidian settings."""
-        if vault_name:
+        if vault_name is not None:
             self.config["obsidian"]["vault_name"] = vault_name
-        if daily_path:
+        if vault_path is not None:
+            self.config["obsidian"]["vault_path"] = vault_path
+        if daily_path is not None:
             self.config["obsidian"]["daily_notes_path"] = daily_path
-        if weekly_path:
+        if weekly_path is not None:
             self.config["obsidian"]["weekly_notes_path"] = weekly_path
+        if sessions_path is not None:
+            self.config["obsidian"]["sessions_notes_path"] = sessions_path
         self.save()

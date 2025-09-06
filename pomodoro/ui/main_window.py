@@ -183,12 +183,13 @@ class PomodoroTimer(QWidget):
         delta = global_pos - self.resize_start_position
         new_width = max(self.minimumWidth(), self.original_geometry.width() + delta.x())
         new_height = max(self.minimumHeight(), self.original_geometry.height() + delta.y())
-        self.setGeometry(
-            self.original_geometry.x(),
-            self.original_geometry.y(),
-            new_width,
-            new_height
-        )
+        
+        # Use resize instead of setGeometry to avoid geometry inconsistency warnings
+        self.resize(new_width, new_height)
+        
+        # Ensure window remains in the same position
+        # This prevents the window from moving when resized
+        self.move(self.original_geometry.x(), self.original_geometry.y())
 
     def start_focus(self):
         """Start a focus session allowing duration adjustments."""
@@ -228,6 +229,10 @@ class PomodoroTimer(QWidget):
             self.running = False
             self.timer.stop()
             self.pause_button.setText("Continue")
+            # If user pauses during a focus period and stops early, offer to log
+            if not self.is_rest_period and self.focus_text:
+                # Treat pause as potential early stop if user clicks Rest next
+                self._early_stop_candidate = True
         else:
             self.running = True
             self.timer.start(1000)
@@ -250,6 +255,16 @@ class PomodoroTimer(QWidget):
                     self.sound_manager.play_focus_end()
                     success = self.ask_session_success()
                     self.session_manager.log_session(self.focus_text, success)
+                    # Record to Obsidian vault if enabled
+                    if self.notes_manager.is_enabled():
+                        planned = self.config.get_focus_period()
+                        self.notes_manager.record_pomodoro_session(
+                            focus_text=self.focus_text,
+                            success=bool(success),
+                            early=False,
+                            planned_minutes=planned,
+                            actual_minutes=planned,
+                        )
                     self.start_rest_period()
                 else:
                     # Rest period ended
@@ -269,6 +284,19 @@ class PomodoroTimer(QWidget):
         """Reset the timer to initial state."""
         self.running = False
         self.timer.stop()
+        # If a focus was in progress and user reset before completion, mark early stop
+        if not self.is_rest_period and self.focus_text and self.time_left > 0:
+            planned = self.config.get_focus_period()
+            actual = (self.pomodoro_time - self.time_left) // 60
+            self.session_manager.log_session(self.focus_text, False)
+            if self.notes_manager.is_enabled():
+                self.notes_manager.record_pomodoro_session(
+                    focus_text=self.focus_text,
+                    success=False,
+                    early=True,
+                    planned_minutes=planned,
+                    actual_minutes=int(actual),
+                )
         self.time_left = self.pomodoro_time if not self.is_rest_period else self.rest_time
         mins, secs = divmod(self.time_left, 60)
         self.timer_label.setText(f"{mins:02d}:{secs:02d}")
@@ -277,7 +305,7 @@ class PomodoroTimer(QWidget):
     def update_focus_label(self):
         """Update the focus text label."""
         if self.focus_text:
-            self.focus_label.setText(f"Focus: {self.focus_text}")
+            self.focus_label.setText(f"{self.focus_text}")
         else:
             self.focus_label.setText("")
 
