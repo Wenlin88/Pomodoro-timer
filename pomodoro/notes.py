@@ -135,6 +135,12 @@ class NotesManager:
             
             self._open_obsidian_url(url)
             logger.info(f"Opened daily note for {date_str}")
+            # Log action to sessions file
+            self.record_pomodoro_session(
+                focus_text=f"Opened Daily note {date_str}",
+                success=True,
+                early=False,
+            )
             return True
         except Exception as e:
             logger.error(f"Error opening daily note: {e}")
@@ -160,6 +166,12 @@ class NotesManager:
             
             self._open_obsidian_url(url)
             logger.info(f"Opened weekly note for {week_str}")
+            # Log action to sessions file
+            self.record_pomodoro_session(
+                focus_text=f"Opened Weekly note {week_str}",
+                success=True,
+                early=False,
+            )
             return True
         except Exception as e:
             logger.error(f"Error opening weekly note: {e}")

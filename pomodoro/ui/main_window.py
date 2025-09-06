@@ -207,6 +207,13 @@ class PomodoroTimer(QWidget):
             self.time_left = self.pomodoro_time
             self.is_rest_period = False
             self.start_timer()
+            # Log to Obsidian that a focus session started
+            if self.notes_manager.is_enabled():
+                self.notes_manager.record_pomodoro_session(
+                    focus_text=f"Started Focus: {self.focus_text}",
+                    success=True,
+                    planned_minutes=focus_len,
+                )
 
     def start_rest(self):
         """Start a rest session."""
@@ -215,6 +222,13 @@ class PomodoroTimer(QWidget):
         self.time_left = self.rest_time
         self.is_rest_period = True
         self.start_timer()
+        # Log to Obsidian that a rest session started
+        if self.notes_manager.is_enabled():
+            self.notes_manager.record_pomodoro_session(
+                focus_text="Started Rest",
+                success=True,
+                planned_minutes=self.config.get_rest_period(),
+            )
 
     def start_timer(self):
         """Start the timer."""
@@ -233,6 +247,13 @@ class PomodoroTimer(QWidget):
             if not self.is_rest_period and self.focus_text:
                 # Treat pause as potential early stop if user clicks Rest next
                 self._early_stop_candidate = True
+            # Log pause event to Obsidian
+            if self.notes_manager.is_enabled():
+                label = "Paused Focus" if not self.is_rest_period else "Paused Rest"
+                self.notes_manager.record_pomodoro_session(
+                    focus_text=label,
+                    success=True,
+                )
         else:
             self.running = True
             self.timer.start(1000)
