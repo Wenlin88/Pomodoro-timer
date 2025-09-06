@@ -27,7 +27,6 @@ DEFAULT_CONFIG = {
     "obsidian": {
         "enabled": True,
         "vault_name": "memory",
-        "vault_path": "",
         "daily_notes_path": "Personal/Notes/Daily Notes",
         "weekly_notes_path": "Personal/Notes/Weekly Notes",
         "sessions_notes_path": "Personal/Notes/Daily Notes"
