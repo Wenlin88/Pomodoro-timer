@@ -211,9 +211,14 @@ class PomodoroTimer(QWidget):
             if self.notes_manager.is_enabled():
                 self.notes_manager.record_pomodoro_session(
                     focus_text=f"Started Focus: {self.focus_text}",
-                    success=True,
+                    success=None,
                     planned_minutes=focus_len,
                 )
+            # Mirror action in sessions log
+            try:
+                self.session_manager.log_event(f"Started Focus: {self.focus_text}")
+            except Exception:
+                pass
 
     def start_rest(self):
         """Start a rest session."""
@@ -226,9 +231,14 @@ class PomodoroTimer(QWidget):
         if self.notes_manager.is_enabled():
             self.notes_manager.record_pomodoro_session(
                 focus_text="Started Rest",
-                success=True,
+                success=None,
                 planned_minutes=self.config.get_rest_period(),
             )
+        # Mirror action in sessions log
+        try:
+            self.session_manager.log_event("Started Rest")
+        except Exception:
+            pass
 
     def start_timer(self):
         """Start the timer."""
@@ -252,12 +262,31 @@ class PomodoroTimer(QWidget):
                 label = "Paused Focus" if not self.is_rest_period else "Paused Rest"
                 self.notes_manager.record_pomodoro_session(
                     focus_text=label,
-                    success=True,
+                    success=None,
                 )
+            # Mirror pause in sessions log
+            try:
+                label = "Paused Focus" if not self.is_rest_period else "Paused Rest"
+                self.session_manager.log_event(label)
+            except Exception:
+                pass
         else:
             self.running = True
             self.timer.start(1000)
             self.pause_button.setText("Pause")
+            # Log resume/continue to Obsidian and sessions log
+            label = (
+                f"Continued Focus: {self.focus_text}" if not self.is_rest_period else "Continued Rest"
+            )
+            if self.notes_manager.is_enabled():
+                self.notes_manager.record_pomodoro_session(
+                    focus_text=label,
+                    success=None,
+                )
+            try:
+                self.session_manager.log_event(label)
+            except Exception:
+                pass
 
     def update_timer(self):
         """Update the timer display and handle timer completion."""
@@ -363,3 +392,48 @@ class PomodoroTimer(QWidget):
                 app = QApplication.instance()
                 if app:
                     app.quit()  # Exit with restart code
+
+    def closeEvent(self, event):
+        """Log an event when the application is closed.
+
+        Includes whether a session was in progress and remaining time.
+        """
+        try:
+            if self.running:
+                if self.is_rest_period:
+                    self.session_manager.log_event("Exited during Rest")
+                    if self.notes_manager.is_enabled():
+                        self.notes_manager.record_pomodoro_session(
+                            focus_text="Exited during Rest",
+                            success=None,
+                        )
+                else:
+                    mins = int(self.time_left // 60)
+                    if self.focus_text:
+                        self.session_manager.log_event(
+                            f"Exited during Focus: {self.focus_text} (remaining {mins}m)"
+                        )
+                        if self.notes_manager.is_enabled():
+                            self.notes_manager.record_pomodoro_session(
+                                focus_text=f"Exited during Focus: {self.focus_text} (remaining {mins}m)",
+                                success=None,
+                            )
+                    else:
+                        self.session_manager.log_event(
+                            f"Exited during Focus (remaining {mins}m)"
+                        )
+                        if self.notes_manager.is_enabled():
+                            self.notes_manager.record_pomodoro_session(
+                                focus_text=f"Exited during Focus (remaining {mins}m)",
+                                success=None,
+                            )
+            else:
+                self.session_manager.log_event("Exited application")
+                if self.notes_manager.is_enabled():
+                    self.notes_manager.record_pomodoro_session(
+                        focus_text="Exited application",
+                        success=None,
+                    )
+        except Exception:
+            pass
+        super().closeEvent(event)

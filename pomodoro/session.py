@@ -72,6 +72,19 @@ class SessionManager:
             logger.error(f"Error logging session: {e}")
             return self.session_count
 
+    def log_event(self, message: str) -> None:
+        """Append a non-counting event entry to the sessions log.
+
+        Used to mirror Obsidian actions (start/rest/pause/resume)
+        without affecting the completed-session counter.
+        """
+        try:
+            timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            with open(self.log_file, "a") as file:
+                file.write(f"Event at {timestamp} - {message}\n")
+        except Exception as e:
+            logger.error(f"Error logging event: {e}")
+
     def get_session_count(self):
         """
         Get the current session count.

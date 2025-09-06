@@ -64,10 +64,11 @@ class NotesManager:
         self,
         *,
         focus_text: str,
-        success: bool,
+        success: bool | None,
         early: bool = False,
         planned_minutes: int | None = None,
         actual_minutes: int | None = None,
+        status: str | None = None,
     ) -> bool:
         """Append a session entry to a dated Markdown file using Obsidian Advanced URI.
 
@@ -80,7 +81,13 @@ class NotesManager:
         try:
             date_str = datetime.datetime.now().strftime("%Y-%m-%d")
             time_str = datetime.datetime.now().strftime("%H:%M")
-            status = "success" if success else ("early stop" if early else "failed")
+            if status is None:
+                if success is None:
+                    status_str = ""
+                else:
+                    status_str = "success" if success else ("early stop" if early else "failed")
+            else:
+                status_str = status
             details: list[str] = []
             if planned_minutes is not None:
                 details.append(f"planned {planned_minutes}m")
@@ -88,7 +95,10 @@ class NotesManager:
                 details.append(f"actual {actual_minutes}m")
             detail_str = f" ({', '.join(details)})" if details else ""
             focus_desc = focus_text or "(no description)"
-            line = f"- {time_str} – {focus_desc} — {status}{detail_str}\\n"
+            if status_str:
+                line = f"- {time_str} – {focus_desc} — {status_str}{detail_str}"
+            else:
+                line = f"- {time_str} – {focus_desc}{detail_str}"
 
             sessions_subpath = (self.obsidian_settings or {}).get("sessions_notes_path") or ""
             filepath = f"{sessions_subpath}/{date_str} - Pomodoro Sessions.md" if sessions_subpath else f"{date_str} - Pomodoro Sessions.md"
@@ -104,7 +114,7 @@ class NotesManager:
                 + urllib.parse.quote(filepath)
                 + "&data="
                 + urllib.parse.quote(line)
-                + "&mode=append"
+                + "&mode=append&silent=true"
             )
             self._open_obsidian_url(url)
             logger.info("Recorded session to Obsidian via Advanced URI")
@@ -135,12 +145,6 @@ class NotesManager:
             
             self._open_obsidian_url(url)
             logger.info(f"Opened daily note for {date_str}")
-            # Log action to sessions file
-            self.record_pomodoro_session(
-                focus_text=f"Opened Daily note {date_str}",
-                success=True,
-                early=False,
-            )
             return True
         except Exception as e:
             logger.error(f"Error opening daily note: {e}")
@@ -166,12 +170,6 @@ class NotesManager:
             
             self._open_obsidian_url(url)
             logger.info(f"Opened weekly note for {week_str}")
-            # Log action to sessions file
-            self.record_pomodoro_session(
-                focus_text=f"Opened Weekly note {week_str}",
-                success=True,
-                early=False,
-            )
             return True
         except Exception as e:
             logger.error(f"Error opening weekly note: {e}")
