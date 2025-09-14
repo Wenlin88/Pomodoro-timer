@@ -114,7 +114,7 @@ class NotesManager:
                 + urllib.parse.quote(filepath)
                 + "&data="
                 + urllib.parse.quote(line)
-                + "&mode=append&silent=true"
+                + "&mode=append&openmode=silent"
             )
             self._open_obsidian_url(url)
             logger.info("Recorded session to Obsidian via Advanced URI")
