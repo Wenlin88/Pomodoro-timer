@@ -1,3 +1,6 @@
+## 0.3.2 - 2025-09-14
+- fix: use openmode=silent for Advanced URI appends to keep Obsidian pane inactive.
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
